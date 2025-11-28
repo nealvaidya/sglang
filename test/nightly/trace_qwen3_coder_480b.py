@@ -112,20 +112,24 @@ class TraceQwen3Coder480B(unittest.TestCase):
 
                         # Record success in results manager
                         for result in results:
+                            # Calculate inter-token latency from output throughput
+                            itl_ms = (
+                                1
+                                / (result.output_throughput / result.batch_size)
+                                * 1000
+                                if result.output_throughput > 0
+                                else None
+                            )
                             self.results_manager.record_success(
                                 model=MODEL_NAME,
                                 config=variant,
                                 batch_size=result.batch_size,
                                 input_len=result.input_len,
                                 output_len=result.output_len,
-                                latency_s=result.total_latency,
-                                input_throughput=result.prefill_throughput,
-                                output_throughput=result.decode_throughput,
-                                itl_ms=(
-                                    result.inter_token_latency * 1000
-                                    if result.inter_token_latency
-                                    else None
-                                ),
+                                latency_s=result.latency,
+                                input_throughput=result.input_throughput,
+                                output_throughput=result.output_throughput,
+                                itl_ms=itl_ms,
                             )
                     else:
                         print(f"⚠️  Primary config failed: {config_name}")
@@ -185,20 +189,24 @@ class TraceQwen3Coder480B(unittest.TestCase):
 
                             # Record success in results manager
                             for result in results:
+                                # Calculate inter-token latency from output throughput
+                                itl_ms = (
+                                    1
+                                    / (result.output_throughput / result.batch_size)
+                                    * 1000
+                                    if result.output_throughput > 0
+                                    else None
+                                )
                                 self.results_manager.record_success(
                                     model=MODEL_NAME,
                                     config=fallback_variant,
                                     batch_size=result.batch_size,
                                     input_len=result.input_len,
                                     output_len=result.output_len,
-                                    latency_s=result.total_latency,
-                                    input_throughput=result.prefill_throughput,
-                                    output_throughput=result.decode_throughput,
-                                    itl_ms=(
-                                        result.inter_token_latency * 1000
-                                        if result.inter_token_latency
-                                        else None
-                                    ),
+                                    latency_s=result.latency,
+                                    input_throughput=result.input_throughput,
+                                    output_throughput=result.output_throughput,
+                                    itl_ms=itl_ms,
                                 )
                         else:
                             failed_configs.append(fallback_config_name)
