@@ -1569,9 +1569,13 @@ def launch_metrics_server(host: str, port: int):
 
     import uvicorn
     from fastapi import FastAPI
-    from prometheus_client import CollectorRegistry, make_asgi_app, multiprocess
 
-    set_prometheus_multiproc_dir()
+    # Ensure PROMETHEUS_MULTIPROC_DIR is set BEFORE importing prometheus_client
+    # The multiprocess module checks for this env var at import time
+    if "PROMETHEUS_MULTIPROC_DIR" not in os.environ:
+        set_prometheus_multiproc_dir()
+
+    from prometheus_client import CollectorRegistry, make_asgi_app, multiprocess
 
     metrics_app = FastAPI()
 
