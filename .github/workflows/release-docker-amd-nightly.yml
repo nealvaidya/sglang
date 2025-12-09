@@ -59,7 +59,7 @@ jobs:
 
   cache:
     if: always() && github.repository == 'sgl-project/sglang'
-    runs-on: linux-mi300-gpu-1
+    runs-on: linux-mi325-gpu-1
     environment: 'prod'
     needs: publish
     strategy:
@@ -127,6 +127,6 @@ jobs:
           docker save "${image}" -o "${tmp_path}"
 
           echo "Moving to final path: ${final_path}"
-          mv -f "${tmp_path}" "${final_path}"
+          sudo mv -f "${tmp_path}" "${final_path}"
 
           echo "Cache populated successfully at ${final_path}"
