@@ -20,7 +20,7 @@ use rustls::crypto::CryptoProvider;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use tokio::{net::TcpListener, signal, spawn};
-use tracing::{error, info, warn, Level};
+use tracing::{debug, error, info, warn, Level};
 
 use crate::{
     app_context::AppContext,
@@ -592,9 +592,6 @@ async fn delete_worker(State(state): State<Arc<AppState>>, Path(url): Path<Strin
     }
 }
 
-/// Re-export ServerTlsConfig from config for convenience
-pub use crate::config::ServerTlsConfig;
-
 pub struct ServerConfig {
     pub host: String,
     pub port: u16,
@@ -941,7 +938,7 @@ pub async fn startup(config: ServerConfig) -> Result<(), Box<dyn std::error::Err
             let cert_path = tls_config.cert_path.as_ref().unwrap();
             let key_path = tls_config.key_path.as_ref().unwrap();
 
-            info!(
+            debug!(
                 "Starting HTTPS/HTTP2 server on {} with TLS (cert: {}, key: {})",
                 bind_addr, cert_path, key_path
             );
@@ -965,7 +962,7 @@ pub async fn startup(config: ServerConfig) -> Result<(), Box<dyn std::error::Err
             // Spawn shutdown signal handler
             spawn(async move {
                 shutdown_signal().await;
-                shutdown_handle.graceful_shutdown(Some(std::time::Duration::from_secs(30)));
+                shutdown_handle.graceful_shutdown(Some(Duration::from_secs(30)));
             });
 
             axum_server::bind_rustls(addr, rustls_config)

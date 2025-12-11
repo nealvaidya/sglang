@@ -5,7 +5,7 @@ use sgl_model_gateway::{
     config::{
         CircuitBreakerConfig, ConfigError, ConfigResult, DiscoveryConfig, HealthCheckConfig,
         HistoryBackend, MetricsConfig, OracleConfig, PolicyConfig, PostgresConfig, RetryConfig,
-        RouterConfig, RoutingMode, ServerTlsConfig, TokenizerCacheConfig, TraceConfig,
+        RouterConfig, RoutingMode, TokenizerCacheConfig, TraceConfig,
     },
     core::ConnectionMode,
     observability::{
@@ -676,10 +676,7 @@ impl CliArgs {
             .circuit_breaker(!self.disable_circuit_breaker)
             .enable_wasm(self.enable_wasm)
             .igw(self.enable_igw)
-            .maybe_server_tls_cert_and_key(
-                self.tls_cert_path.as_ref(),
-                self.tls_key_path.as_ref(),
-            );
+            .maybe_server_tls_cert_and_key(self.tls_cert_path.as_ref(), self.tls_key_path.as_ref());
 
         // Add optional server TLS mTLS settings
         let builder = if let Some(ca_path) = &self.tls_client_ca_cert_path {
